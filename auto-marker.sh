@@ -5,7 +5,7 @@ set -e
 base_dir=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
 
 function usage {
-    echo "$0 <exercise-name> <tutee>+"
+    echo "$0 <exercise-name> \"<tutee>+\""
 }
 
 exercise=$1
@@ -46,7 +46,7 @@ skelhash=$(git --git-dir ${exercise}/Masters/.git log --format=%h | tail -n1)
 echo "Comparing with skeleton solution (${skelhash})"
 
 for tutee in ${tutees}; do
-    git --git-dir ${exercise}/${tutee}/.git diff ${skelhash}..master > ${exercise}/${tutee}.diff
+    git --git-dir ${exercise}/${tutee}/.git diff -U1000 ${skelhash}..master > ${exercise}/${tutee}.diff
     echo "  * ${tutee} changed $(wc -l ${exercise}/${tutee}.diff | cut -d' ' -f1) lines"
     enscript -b "${tutee} - Diff - ${exercise}" -o ${exercise}/${tutee}-diff.ps --color -Ediffu -G -f Courier8 -2r ${exercise}/${tutee}.diff
 done
