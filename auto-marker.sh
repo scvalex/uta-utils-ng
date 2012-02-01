@@ -48,6 +48,7 @@ echo "Comparing with skeleton solution (${skelhash})"
 for tutee in ${tutees}; do
     git --git-dir ${exercise}/${tutee}/.git diff -U1000 ${skelhash}..master > ${exercise}/${tutee}.diff
     echo "  * ${tutee} changed $(wc -l ${exercise}/${tutee}.diff | cut -d' ' -f1) lines"
+    fromdos ${exercise}/${tutee}.diff
     enscript -b "${tutee} - Diff - ${exercise}" -o ${exercise}/${tutee}-diff.ps --color -Ediffu -G -f Courier8 -2r ${exercise}/${tutee}.diff
 done
 
