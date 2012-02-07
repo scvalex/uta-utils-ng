@@ -51,24 +51,20 @@ echo "Comparing with skeleton solution (${skelhash})"
 for tutee in ${tutees}; do
     echo "  * Repo for ${tutee}"
     #git --git-dir ${exercise}/${tutee}/.git diff -U1000 ${skelhash}..master > ${exercise}/${tutee}.diff
-    changedFiles=$(git --git-dir ${exercise}/${tutee}/.git diff --raw --stat ${skelhash}..HEAD | grep ':000000' | cut -d'	' -f2 | grep -v '.metadata' | grep -v '.dat')
+    changedFiles=$(git --git-dir ${exercise}/${tutee}/.git diff --raw --stat ${skelhash}..HEAD | grep ':000000' | cut -d'	' -f2 | grep -v '.metadata' | grep '.java')
     #echo "  * ${tutee} changed $(wc -l ${exercise}/${tutee}.diff | cut -d' ' -f1) lines"
     #fromdos ${exercise}/${tutee}.diff
     rm -f ${exercise}/${tutee}.changedfiles
-    rm -f ${exercise}/${tutee}.code
+    changedFilesAbs=""
     for f in ${changedFiles}; do
         if [ ! -f "${exercise}/${tutee}/$f" ]; then
             echo "Skipping ${f}"
             continue
         fi
-        echo "/**************" >> ${exercise}/${tutee}.code
-        echo "* ${f}" >> ${exercise}/${tutee}.code
-        echo "**************/" >> ${exercise}/${tutee}.code
-        cat "${exercise}/${tutee}/$f" >> ${exercise}/${tutee}.code
-        echo -e -n "\n\n" >> ${exercise}/${tutee}.code
         echo "$f" >> ${exercise}/${tutee}.changedfiles
+        changedFilesAbs="${changedFilesAbs} ${exercise}/${tutee}/${f}"
     done
-    enscript -b "${tutee} - Diff - ${exercise}" -o ${exercise}/${tutee}-code.ps --color -Ejava -G -f Courier8 -2r ${exercise}/${tutee}.code
+    enscript -b "${tutee} - Diff - ${exercise}" -o ${exercise}/${tutee}-code.ps --color -Ejava -G -f Courier8 -2r -C ${changedFilesAbs}
 done
 
 echo "Generating printable checkstyle reports"
