@@ -50,10 +50,7 @@ echo "Comparing with skeleton solution (${skelhash})"
 
 for tutee in ${tutees}; do
     echo "  * Repo for ${tutee}"
-    #git --git-dir ${exercise}/${tutee}/.git diff -U1000 ${skelhash}..master > ${exercise}/${tutee}.diff
-    changedFiles=$(git --git-dir ${exercise}/${tutee}/.git diff --raw --stat ${skelhash}..HEAD | grep ':000000' | cut -d'	' -f2 | grep -v '.metadata' | grep '.java')
-    #echo "  * ${tutee} changed $(wc -l ${exercise}/${tutee}.diff | cut -d' ' -f1) lines"
-    #fromdos ${exercise}/${tutee}.diff
+    changedFiles=$(git --git-dir ${exercise}/${tutee}/.git diff --raw --stat ${skelhash}..HEAD | grep ':' | cut -d'	' -f2 | grep -v '.metadata' | grep '.java')
     rm -f ${exercise}/${tutee}.changedfiles
     changedFilesAbs=""
     for f in ${changedFiles}; do
@@ -64,13 +61,21 @@ for tutee in ${tutees}; do
         echo "$f" >> ${exercise}/${tutee}.changedfiles
         changedFilesAbs="${changedFilesAbs} ${exercise}/${tutee}/${f}"
     done
-    enscript -b "${tutee} - Diff - ${exercise}" -o ${exercise}/${tutee}-code.ps --color -Ejava -G -f Courier8 -2r -C ${changedFilesAbs}
+    enscript -b "${tutee} - Code - ${exercise}" -o ${exercise}/${tutee}-code.ps --color -Ejava -G -f Courier8 -2r -C ${changedFilesAbs}
 done
 
 echo "Generating printable checkstyle reports"
 
 for tutee in ${tutees}; do
+    echo "  * Checking for ${tutee}"
     checkstyle -c "${base_dir}/almost_sun_checks.xml" $(find "${exercise}/${tutee}" -name '*.java') > ${exercise}/${tutee}.checkstyle || true
-    grep -v -f ${exercise}/${tutee}.changedfiles ${exercise}/${tutee}.checkstyle > ${exercise}/${tutee}.checkstyle2
+    grep -f ${exercise}/${tutee}.changedfiles ${exercise}/${tutee}.checkstyle > ${exercise}/${tutee}.checkstyle2
     enscript -b "${tutee} - Style - ${exercise}" -o ${exercise}/${tutee}-style.ps -G -f Courier8 ${exercise}/${tutee}.checkstyle2
+done
+
+echo "Combining reports"
+
+for tutee in ${tutees}; do
+    echo "  * Combining ${tutee}'s reports"
+    gs -dBATCH -dNOPAUSE -q -sDEVICE=pdfwrite -sOutputFile=${exercise}/${tutee}-combinded.pdf ${exercise}/${tutee}-*.ps
 done
