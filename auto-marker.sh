@@ -31,9 +31,6 @@ function get_repo {
         git clone -q "doc:/vol/lab/firstyear/Repositories/2011-2012/161/$2/$1.git" $1/$2 || \
         git clone -q "doc:/vol/lab/firstyear/Repositories/2011-2012/161/$2/$1" $1/$2
     fi
-    wd=$(pwd)
-    cd $1/$2 && git checkout part2 || git checkout part1
-    cd ${wd}
 }
 
 echo "Getting repos..."
@@ -62,6 +59,18 @@ for tutee in ${tutees}; do
         changedFilesAbs="${changedFilesAbs} ${exercise}/${tutee}/${f}"
     done
     enscript -b "${tutee} - Code - ${exercise}" -o ${exercise}/${tutee}-code.ps --color -Ejava -G -f Courier8 -2r -C ${changedFilesAbs}
+done
+
+echo "Building submissions"
+
+for tutee in ${tutees}; do
+    echo "  * Building for ${tutee}"
+    wd=$(pwd)
+    cd "${exercise}/${tutee}"
+    ln -sf "${base_dir}/build.xml" .
+    { ant || echo -e "\nBUILD FAILED\n" ;} > ../${tutee}-build.txt
+    cd ${wd}
+    enscript -b "${tutee} - Build - ${exercise}" -o ${exercise}/${tutee}-build.ps -G -f Courier8 ${exercise}/${tutee}-build.txt
 done
 
 echo "Generating printable checkstyle reports"
