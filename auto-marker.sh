@@ -86,5 +86,5 @@ echo "Combining reports"
 
 for tutee in ${tutees}; do
     echo "  * Combining ${tutee}'s reports"
-    gs -dBATCH -dNOPAUSE -q -sDEVICE=pdfwrite -sOutputFile=${exercise}/${tutee}-combinded.pdf ${exercise}/${tutee}-*.ps
+    gs -dBATCH -dNOPAUSE -q -sDEVICE=pdfwrite -sOutputFile=${exercise}/${tutee}-combined.pdf ${exercise}/${tutee}-*.ps
 done
