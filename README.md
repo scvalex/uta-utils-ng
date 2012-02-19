@@ -22,3 +22,5 @@ Reports generated
 
 - Code in changed `.java` files,
 - `checkstyle` warning for the changed files.
+- Java -Xlint warnings
+
