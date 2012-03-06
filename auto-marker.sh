@@ -55,8 +55,14 @@ for tutee in ${tutees}; do
             echo "Skipping ${f}"
             continue
         fi
-        echo "$f" >> ${exercise}/${tutee}.changedfiles
-        changedFilesAbs="${changedFilesAbs} ${exercise}/${tutee}/${f}"
+
+        # ignore files in the support subdir
+        if echo ${f} | grep "support/"; then
+            true
+        else
+            echo "$f" >> ${exercise}/${tutee}.changedfiles
+            changedFilesAbs="${changedFilesAbs} ${exercise}/${tutee}/${f}"
+        fi
     done
     enscript -b "${tutee} - Code - ${exercise}" -o ${exercise}/${tutee}-code.ps --color -Ejava -G -f Courier8 -2r -C ${changedFilesAbs}
 done
